@@ -29,27 +29,13 @@ public class WebSecurity {
         http
             .authorizeHttpRequests(request -> request
                 .requestMatchers(WHILELIST).permitAll()
-                .requestMatchers("/post/**").authenticated()
+                // .requestMatchers("/post/**").authenticated()
                 // .requestMatchers("/admin/**").hasRole(Roles.ADMIN.getRole())
                 // .requestMatchers("/editor/**").hasAnyRole(Roles.ADMIN.getRole(),Roles.EDITOR.getRole())
                 // .requestMatchers("/admin/**").hasAuthority(Privillage.ACCESS_ADMIN_PANEL.getName())
-                .requestMatchers("/profile/**").authenticated()
-            )
+                // .requestMatchers("/profile/**").authenticated()
+            );
             // Config when no permission page will be redirect login page '/login'
-            .formLogin((form) -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .usernameParameter("email")
-                .passwordParameter("password")
-                .defaultSuccessUrl("/home",true)
-                .failureUrl("/login?error")
-                .permitAll()
-            )
-            .rememberMe(rememberMe -> rememberMe.key("uniqueAndSecret"))
-            .logout((logout) -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/home")
-                .permitAll());
         http.csrf(csrf -> csrf .disable());
         http.headers(h -> h.frameOptions(c -> c.disable()));
 

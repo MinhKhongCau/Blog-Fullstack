@@ -1,5 +1,6 @@
 package com.myproject.blog.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +18,13 @@ public class AuthorityService {
         authorityRepository.save(authority);
     }
 
-    public Optional<Authority> findById(Long id) {
+    public Optional<Authority> findById(Integer id) {
         // TODO Auto-generated method stub
         return authorityRepository.findById(id);
+    }
+
+    public List<Authority> getAll() {
+        return authorityRepository.findAll();
     }
     
 }

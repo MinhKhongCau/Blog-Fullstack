@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,12 +26,16 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name = "FIRSTNAME")
     private String firstName;
+    @Column(name="LASTNAME")
     private String lastName;
     private String email;
     private String password;
     private Boolean gender;
     private Integer age;
+
+    @Column(name = "BIRTHDATE")
     private Date birthDate;
     private String photo;
     private String token;
