@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/MinhKhongCau/Blog-Fullstack/tree/main/Front-end/static/css/main.f855e6bc.css",
+    "main.js": "/MinhKhongCau/Blog-Fullstack/tree/main/Front-end/static/js/main.f8441582.js",
+    "static/js/453.a5b5c665.chunk.js": "/MinhKhongCau/Blog-Fullstack/tree/main/Front-end/static/js/453.a5b5c665.chunk.js",
+    "index.html": "/MinhKhongCau/Blog-Fullstack/tree/main/Front-end/index.html",
+    "main.f855e6bc.css.map": "/MinhKhongCau/Blog-Fullstack/tree/main/Front-end/static/css/main.f855e6bc.css.map",
+    "main.f8441582.js.map": "/MinhKhongCau/Blog-Fullstack/tree/main/Front-end/static/js/main.f8441582.js.map",
+    "453.a5b5c665.chunk.js.map": "/MinhKhongCau/Blog-Fullstack/tree/main/Front-end/static/js/453.a5b5c665.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f855e6bc.css",
+    "static/js/main.f8441582.js"
+  ]
+}
