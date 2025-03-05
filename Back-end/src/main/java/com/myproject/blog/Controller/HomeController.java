@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.myproject.blog.Model.Post;
 import com.myproject.blog.Service.PostService;
@@ -20,16 +21,16 @@ public class HomeController {
     private PostService postService;
     
     @GetMapping("/")
-    public String firstPage(Model model) {
+    public String firstPage() {
         return "index";
     }
 
     @GetMapping("/home")
-    public String home(Model model,@RequestParam(required = false, defaultValue = "createAt", name = "sort_by") String sort_by,
+    @ResponseBody
+    public Page<Post> home(@RequestParam(required = false, defaultValue = "createAt", name = "sort_by") String sort_by,
     @RequestParam(required = false, defaultValue = "1", name = "page") String page,
     @RequestParam(required = false, defaultValue = "2", name = "per_page") String per_page) {
         Page<Post> posts = postService.getByPage(Integer.parseInt(page)-1, Integer.parseInt(per_page), sort_by);
-        model.addAttribute("posts",posts);
 
         System.out.println(per_page);
         int total_page = posts.getTotalPages();
@@ -49,13 +50,13 @@ public class HomeController {
                 String link_patigation = "/home?per_page="+per_page+"&page="+(link+1)+"&sort_by="+sort_by;
                 links.add(String.format("<li class=\"page-item %s\"><a class=\"page-link\" href=\"%s\">%s</a></li>",active,link_patigation,(link+1)));
             }
-            model.addAttribute("links", links);
+            // model.addAttribute("links", links);
         }
 
         for (Post post: posts) {
             System.out.println("***"+post.getId() + " "+ post.getTitle() + " " + post.getAuthor().getAuthorities());
         }
-        return "home";
+        return posts;
     }
 
     @GetMapping("/about")

@@ -11,20 +11,20 @@ public class Json {
 
     private static ObjectMapper objectMapper;
     
-        public static String pharseToJsonObject(Object object)  {
-            String json = null;
-            try {
-                objectMapper = new ObjectMapper();
+    public static String toJson(Object object)  {
+        String json = null;
+        try {
+            objectMapper = new ObjectMapper();
 
-            json = objectMapper.writeValueAsString(object);
-            } catch (JsonProcessingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        return json;
+        json = objectMapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    return json;
     }
 
-    public static String pharseToJsonObject(List<Object> listObject) {
+    public static String toJson(List<Object> listObject) {
         String json = null;
         try {
             json = objectMapper.writeValueAsString(listObject);
@@ -35,7 +35,7 @@ public class Json {
         return json;
     }
 
-    public static List<Object> pharseJsonToList(String json) {
+    public static List<Object> toListJson(String json) {
         List<Object> objects = null;
         try {
             objects = objectMapper.readValue(json, new TypeReference<List<Object>>(){});

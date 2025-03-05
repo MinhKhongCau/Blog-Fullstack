@@ -15,7 +15,8 @@ public enum ReturnStatus {
        return object;
     }
 
-    public void chargeMessage(String message) {
+    public ReturnObject chargeMessage(String message) {
         object.setMessage(message);
+        return object;
     }
 }

@@ -56,9 +56,10 @@ public class AccountService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         // TODO Auto-generated method stub
-        Optional<Account> optionalAccount = accountRepsitory.findOneByEmailIgnoreCase(email);
+        System.out.println("***Load email: "+email); 
+        Optional<Account> optionalAccount = getByEmail(email);
         if (!optionalAccount.isPresent()) {
-            System.out.println("***Load user: "+optionalAccount.get().getEmail());
+            System.out.println("***This user exited: "+optionalAccount.get().getEmail());
             throw new UsernameNotFoundException(email);
         }
         
@@ -70,7 +71,7 @@ public class AccountService implements UserDetailsService {
             grantedAuthorities.add(new SimpleGrantedAuthority(auth.getName()));
         }
 
-        System.out.println("***Load user: "+account.toString());
+        System.out.println("***User is save in authorities: "+account.getEmail());
         return new User(account.getEmail(),account.getPassword(),grantedAuthorities);
     }
 

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +35,7 @@ import com.myproject.blog.Until.RandomString;
 import com.myproject.blog.Until.Constants.Json;
 import com.myproject.blog.Until.Constants. ReturnStatus;
 import com.myproject.blog.Until.Email.EmailData;
+import com.myproject.blog.Until.Role.Roles;
 
 @Controller
 public class AccountController {
@@ -60,20 +63,21 @@ public class AccountController {
 
     @PostMapping("/register")
     @ResponseBody
-    public String getRegister(@ModelAttribute Account account, BindingResult result, RedirectAttributes attributes) {
+    public String getRegister(@RequestBody Account account, BindingResult result, RedirectAttributes attributes) {
+        System.out.println("***" + account.getEmail() + " " + account.getFirstName() + "   " + account.getLastName());
         if (result.hasErrors()) {
              ReturnStatus sr =  ReturnStatus.ERROR;
             sr.chargeMessage("Check your input and try again.");
-            return Json.pharseToJsonObject(sr.getObject());
+            return Json.toJson(sr.getObject());
         }
         System.out.println("***Save account:");
         Optional<Account> accouOptional = accountService.getByEmail(account.getEmail());
         if (accouOptional.isPresent()) {
-             ReturnStatus sr =  ReturnStatus.ERROR;
-            sr.chargeMessage("This accout was register.");
-            return Json.pharseToJsonObject(sr.getObject());
+            ReturnStatus sr =  ReturnStatus.ERROR;
+            sr.chargeMessage("This account was register.");
+            return Json.toJson(sr.getObject());
         }
-        account.setRole(1);
+        account.setRole(Roles.USER.getRole());
         accountService.save(account);
         SecurityContextHolder.clearContext();
 
@@ -83,11 +87,8 @@ public class AccountController {
 
     @GetMapping("/login")
     @ResponseBody
-    public String menu(Model model) {
-         ReturnStatus rv =  ReturnStatus.SENT;
-        System.out.println(rv);
-        rv.chargeMessage("This is my login page");
-        return Json.pharseToJsonObject(rv.getObject());
+    public String menu() {
+        return Json.toJson(ReturnStatus.SENT.chargeMessage("This is my login page"));
     }
 
     /**
@@ -97,33 +98,34 @@ public class AccountController {
     @GetMapping("/profile")
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
-    public Account profile(Principal principal) {
+    public Optional<Account> profile(Principal principal) {
+        System.out.println("Page profile is process...");
         String auth = "email";
         if (principal != null) {
             auth = principal.getName();
         }
+        System.out.println("Load principal: "+auth);
         Optional<Account> accountOptional = accountService.getByEmail(auth);
         if (accountOptional.isPresent()) {
-            Account account = accountOptional.get();
-            System.out.println("*** Load account is: "+account.getFirstName());
+            System.out.println("*** Load account is: "+accountOptional.get().getFirstName());
 
-            return account;
+            return accountOptional;
         }
-        return accountOptional.get();
+        return accountOptional;
     }
 
     @PostMapping("/profile")
     @ResponseBody
-    public String profileHandler(@ModelAttribute Account account, BindingResult result, Principal principal) {
+    public String profileHandler(@RequestBody Account account, BindingResult result, Principal principal) {
         if (result.hasErrors()) {
             return  ReturnStatus.ERROR.toString();
         }
         String email = "email";
         if (principal != null) {
-            email = principal.getName();
+            email = principal.getName();    
         }
         if (account.getEmail().compareToIgnoreCase(email) < 0) {
-            return  ReturnStatus.ERROR.toString();
+            return ReturnStatus.ERROR.toString();
         }
         Optional<Account> optionalAccount = accountService.getById(account.getId());
         if (optionalAccount.isPresent()) {
@@ -139,8 +141,7 @@ public class AccountController {
         }
         System.out.println("***Update account:");
         accountService.save(account);
-        // redirect:/login
-        return Json.pharseToJsonObject(ReturnStatus.SUCCESS.getObject());
+        return Json.toJson(ReturnStatus.SUCCESS.getObject());
     }
     
     @PostMapping("/profile/photo")
@@ -148,8 +149,7 @@ public class AccountController {
     public String loadPhotoHandle(@RequestParam("file") MultipartFile file,
     RedirectAttributes attributes,Principal principal) {
         if (file.isEmpty()) {
-            attributes.addFlashAttribute("error", "No file upload");
-            return "redirect:/profile";
+            return Json.toJson(ReturnStatus.ERROR.chargeMessage("Photo is not available!!!"));
         } else {
             try {
                 @SuppressWarnings("null")
@@ -162,9 +162,7 @@ public class AccountController {
 
                 Path path = Paths.get(fileLocation);
                 Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-                attributes.addFlashAttribute("message","You successfully upload");
-                System.out.println("*** Path was prepare: "+ fileLocation);
-
+                
                 String email = "email";
                 if (principal != null) {
                     email = principal.getName();
@@ -179,24 +177,30 @@ public class AccountController {
                     account_by_id.setPhoto(relativePath);
                     accountService.save(account_by_id);
                 }
-                return "redirect:/profile";
+                
+                
+                System.out.println("*** Path was prepare: "+ fileLocation);
+
+                return ReturnStatus.SUCCESS.chargeMessage("You successfully upload!!!").toString();
 
             } catch (Exception e) {
                 // TODO: handle exception
                 e.printStackTrace();
             }
         }
-        return "redirect:/profile";
+        return Json.toJson(ReturnStatus.SENT.chargeMessage("Cannot load user. Try again!"));
     }
     
     @GetMapping("/forgot-password")
+    @ResponseBody
     public String fogotPassword(Model model) {
-        return "account_view/forgot_password";
+        return Json.toJson(ReturnStatus.SENT);
     }
 
     @PostMapping("/forgot-password")
-    public String resetPasswordHandler(Model model, @RequestParam String email, RedirectAttributes attributes) {
+    public ReturnStatus resetPasswordHandler(Model model, @RequestParam("email") String email, RedirectAttributes attributes) {
         //TODO: process POST request
+        System.out.println("Controller for password is processing...");
         Optional<Account> accountOptional = accountService.getByEmail(email);
         if (accountOptional.isPresent()) {
             String resetToken = UUID.randomUUID().toString();
@@ -215,16 +219,18 @@ public class AccountController {
             );
             EmailData emailData = new EmailData(email, resetPasswordMessage, "Email link to reset password");
             if (emailService.sendSimpleEmail(emailData) == false) {
-                attributes.addFlashAttribute("error", "Fail sending email, contact admin");
-                
-                return Json.pharseToJsonObject(accountOptional);
+                ReturnStatus returnStatus = ReturnStatus.ERROR;
+                returnStatus.chargeMessage("Cannot send email!!!");
+                return returnStatus;
             }
 
-            attributes.addFlashAttribute("message", "Email was send");
-            return "redirect:/forgot-password";
+            ReturnStatus returnStatus = ReturnStatus.SENT;
+            returnStatus.chargeMessage("Email was be sent!");
+            return returnStatus;
         } else {
-            attributes.addFlashAttribute("error", "Email not available");
-            return "redirect:/forgot-password";
+            ReturnStatus returnStatus = ReturnStatus.ERROR;
+            returnStatus.chargeMessage("Email not available");
+            return returnStatus;
         }
     }
 
@@ -237,11 +243,12 @@ public class AccountController {
             Account account = accountOptional.get();
             LocalDateTime now = LocalDateTime.now();
             if (now.isAfter(accountOptional.get().getResetPasswordExpiry())) {
-                attributes.addFlashAttribute("error","Token was expired");
-                return "redirect:/forgot-password";
+                ReturnStatus returnStatus = ReturnStatus.SENT;
+                returnStatus.chargeMessage("Token was expired!");
+                return returnStatus.toString();
             }
             model.addAttribute("account",account);
-            return "account_view/change_password";
+            return account.toString();
         }
 
         attributes.addFlashAttribute("error","Invalid token");

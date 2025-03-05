@@ -13,7 +13,7 @@
 	<artifactId>blog</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>blog</name>
-	<description>Demo project for Spring Boot + React JS + SQL Server</description>
+	<description>Demo project for Spring Boot + React JS + SQL Server + RestAPI</description>
 	<url />
 	<licenses>
 		<license />

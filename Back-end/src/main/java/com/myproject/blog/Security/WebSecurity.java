@@ -2,6 +2,8 @@ package com.myproject.blog.Security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,9 +35,23 @@ public class WebSecurity {
                 // .requestMatchers("/admin/**").hasRole(Roles.ADMIN.getRole())
                 // .requestMatchers("/editor/**").hasAnyRole(Roles.ADMIN.getRole(),Roles.EDITOR.getRole())
                 // .requestMatchers("/admin/**").hasAuthority(Privillage.ACCESS_ADMIN_PANEL.getName())
-                // .requestMatchers("/profile/**").authenticated()
-            );
+                .requestMatchers("/profile/**").authenticated()
+            )
             // Config when no permission page will be redirect login page '/login'
+            .formLogin((form) -> form
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
+                .usernameParameter("email")
+                .passwordParameter("password")
+                .defaultSuccessUrl("/home",true)
+                .failureUrl("/login?error")
+                .permitAll()
+            )
+            .rememberMe(rememberMe -> rememberMe.key("uniqueAndSecret"))
+            .logout((logout) -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/home")
+                .permitAll());
         http.csrf(csrf -> csrf .disable());
         http.headers(h -> h.frameOptions(c -> c.disable()));
 
@@ -43,8 +59,13 @@ public class WebSecurity {
     }
 
     @Bean
-    static PasswordEncoder encodePassword() {
+    public static PasswordEncoder encodePassword() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
 }
