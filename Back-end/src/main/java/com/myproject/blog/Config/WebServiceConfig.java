@@ -10,26 +10,27 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebServiceConfig {
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(@SuppressWarnings("null") CorsRegistry registry) {
-                registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:3000")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE");
-            }
-        };
-    }
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(@SuppressWarnings("null") CorsRegistry registry) {
+				registry.addMapping("/api/**").allowedOrigins("http://localhost:3000").allowedMethods("GET", "POST",
+						"PUT", "DELETE");
+			}
+		};
+	}
 
-    @Bean
-    public CorsFilter corsFilter() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("http://localhost:3000");
-        config.addAllowedMethod("*");
-        config.addAllowedHeader("*");
-        return new CorsFilter(new UrlBasedCorsConfigurationSource() {{
-            registerCorsConfiguration("/**", config);
-        }});
-    }
+	@Bean
+	public CorsFilter corsFilter() {
+		CorsConfiguration config = new CorsConfiguration();
+		config.addAllowedOrigin("http://localhost:3000");
+		config.addAllowedMethod("*");
+		config.addAllowedHeader("*");
+		return new CorsFilter(new UrlBasedCorsConfigurationSource() {
+			{
+				registerCorsConfiguration("/**", config);
+			}
+		});
+	}
 }

@@ -19,19 +19,19 @@ import lombok.Setter;
 @Entity
 @Table(name = "COMMENT")
 public class Comment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private String body;
-    private Date commentAt;
-    private Date updateAt;
-    private Date deleteAt;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
+	private String body;
+	private Date commentAt;
+	private Date updateAt;
+	private Date deleteAt;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_ACCOUNT")
-    private Account account;
+	@ManyToOne
+	@JoinColumn(name = "ID_ACCOUNT")
+	private Account account;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_POST")
-    private Post post;
+	@ManyToOne
+	@JoinColumn(name = "ID_POST")
+	private Post post;
 }

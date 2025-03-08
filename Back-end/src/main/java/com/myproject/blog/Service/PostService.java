@@ -15,30 +15,30 @@ import com.myproject.blog.Repository.PostRepository;
 
 @Service
 public class PostService {
-    @Autowired
-    private PostRepository postRepository;
+	@Autowired
+	private PostRepository postRepository;
 
-    public Optional<Post> getById(Long id) {
-        return postRepository.findById(id);
-    }
+	public Optional<Post> getById(Long id) {
+		return postRepository.findById(id);
+	}
 
-    public List<Post> getAll() {
-        return postRepository.findAll();
-    }
+	public List<Post> getAll() {
+		return postRepository.findAll();
+	}
 
-    public Page<Post> getByPage(int offset, int pageSize, String field) {
-        return postRepository.findAll(PageRequest.of(offset, pageSize).withSort(Direction.ASC,field));
-    }
+	public Page<Post> getByPage(int offset, int pageSize, String field) {
+		return postRepository.findAll(PageRequest.of(offset, pageSize).withSort(Direction.ASC, field));
+	}
 
-    public void delete(Post post) {
-        postRepository.delete(post);
-    }
+	public void delete(Post post) {
+		postRepository.delete(post);
+	}
 
-    public void save(Post post) {
-        if (post.getId() == null) {
-            post.setCreateAt(LocalDateTime.now());
-            System.out.println("***Post data was saved");
-        }
-        postRepository.save(post);
-    }
+	public void save(Post post) {
+		if (post.getId() == null) {
+			post.setCreateAt(LocalDateTime.now());
+			System.out.println("***Post data was saved");
+		}
+		postRepository.save(post);
+	}
 }

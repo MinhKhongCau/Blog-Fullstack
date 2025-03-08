@@ -20,64 +20,65 @@ import com.myproject.blog.Repository.AccountRepsitory;
 
 @Service
 public class AccountService implements UserDetailsService {
-    
-    @Autowired
-    private AccountRepsitory accountRepsitory;
-    
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
-    public Optional<Account> getById(Integer id) {
-        return accountRepsitory.findById(id);
-    }
+	@Autowired
+	private AccountRepsitory accountRepsitory;
 
-    public List<Account> getAll() {
-        return accountRepsitory.findAll();
-    }
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-    public Account save(Account account) {
-        account.setPassword(passwordEncoder.encode(account.getPassword()));
-        if (account.getPhoto() == null) {
-            account.setPhoto("/images/person_img.png");
-        }
-        System.out.println("*** Saved account: "+account.toString());
+	public Optional<Account> getById(Integer id) {
+		return accountRepsitory.findById(id);
+	}
 
-        return accountRepsitory.save(account);
-    }
+	public List<Account> getAll() {
+		return accountRepsitory.findAll();
+	}
 
-    public void delete(Account account) {
-        accountRepsitory.delete(account);
-    }
+	public Account save(Account account) {
+		account.setPassword(passwordEncoder.encode(account.getPassword()));
+		if (account.getPhoto() == null) {
+			account.setPhoto("/images/person_img.png");
+		}
+		System.out.println("*** Saved account: " + account.toString());
 
-    public Optional<Account> getByEmail(String email) {
-        return accountRepsitory.findOneByEmailIgnoreCase(email);
-    }
+		return accountRepsitory.save(account);
+	}
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // TODO Auto-generated method stub
-        System.out.println("***Load email: "+email); 
-        Optional<Account> optionalAccount = getByEmail(email);
-        if (!optionalAccount.isPresent()) {
-            System.out.println("***This user exited: "+optionalAccount.get().getEmail());
-            throw new UsernameNotFoundException(email);
-        }
-        
-        Account account = optionalAccount.get();
-        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        grantedAuthorities.add(new SimpleGrantedAuthority(account.getRole().toString()));
+	public void delete(Account account) {
+		accountRepsitory.delete(account);
+	}
 
-        for (Authority auth: account.getAuthorities()) {
-            grantedAuthorities.add(new SimpleGrantedAuthority(auth.getName()));
-        }
+	public Optional<Account> getByEmail(String email) {
+		return accountRepsitory.findOneByEmailIgnoreCase(email);
+	}
 
-        System.out.println("***User is save in authorities: "+account.getEmail());
-        return new User(account.getEmail(),account.getPassword(),grantedAuthorities);
-    }
+	@Override
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		// TODO Auto-generated method stub
+		System.out.println("***Load email: " + email);
+		Optional<Account> optionalAccount = getByEmail(email);
+		if (!optionalAccount.isPresent()) {
+			System.out.println("***This user exited: " + optionalAccount.get().getEmail());
+			throw new UsernameNotFoundException(email);
+		}
 
-    public Optional<Account> getByToken(String token) {
-        return accountRepsitory.findByToken(token);
-    }
+		Account account = optionalAccount.get();
+		List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+		grantedAuthorities.add(new SimpleGrantedAuthority(account.getRole().toString()));
+
+		for (Authority auth : account.getAuthorities()) {
+			grantedAuthorities.add(new SimpleGrantedAuthority(auth.getName()));
+		}
+
+		User user = new User(account.getEmail(), account.getPassword(), grantedAuthorities);
+		System.out.println("***User is save in authorities: " + user);
+
+		return user;
+	}
+
+	public Optional<Account> getByToken(String token) {
+		return accountRepsitory.findByToken(token);
+	}
 
 }
-

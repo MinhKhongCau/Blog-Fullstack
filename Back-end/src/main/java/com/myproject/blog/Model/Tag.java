@@ -15,8 +15,8 @@ import lombok.Setter;
 @Entity
 @Table(name = "TAG")
 public class Tag {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private String tagName;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
+	private String tagName;
 }

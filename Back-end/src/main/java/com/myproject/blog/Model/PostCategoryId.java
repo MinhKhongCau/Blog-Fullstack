@@ -4,6 +4,6 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 class PostCategoryId {
-    private Integer idPost;
-    private Integer idCategory;
+	private Integer idPost;
+	private Integer idCategory;
 }

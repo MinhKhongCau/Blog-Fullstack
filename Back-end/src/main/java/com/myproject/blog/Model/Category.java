@@ -15,9 +15,9 @@ import lombok.Setter;
 @Entity
 @Table(name = "CATEGORY")
 public class Category {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private String categoryName;
-    private Boolean allow;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
+	private String categoryName;
+	private Boolean allow;
 }

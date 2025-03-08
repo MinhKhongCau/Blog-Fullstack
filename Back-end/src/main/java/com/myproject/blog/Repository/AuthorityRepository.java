@@ -7,5 +7,5 @@ import com.myproject.blog.Model.Authority;
 
 @Repository
 public interface AuthorityRepository extends JpaRepository<Authority, Integer> {
-    
+
 }

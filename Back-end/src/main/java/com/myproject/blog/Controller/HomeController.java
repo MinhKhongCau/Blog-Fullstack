@@ -17,51 +17,51 @@ import com.myproject.blog.Service.PostService;
 
 @Controller
 public class HomeController {
-    @Autowired
-    private PostService postService;
-    
-    @GetMapping("/")
-    public String firstPage() {
-        return "index";
-    }
+	@Autowired
+	private PostService postService;
 
-    @GetMapping("/home")
-    @ResponseBody
-    public Page<Post> home(@RequestParam(required = false, defaultValue = "createAt", name = "sort_by") String sort_by,
-    @RequestParam(required = false, defaultValue = "1", name = "page") String page,
-    @RequestParam(required = false, defaultValue = "2", name = "per_page") String per_page) {
-        Page<Post> posts = postService.getByPage(Integer.parseInt(page)-1, Integer.parseInt(per_page), sort_by);
+	@GetMapping("/")
+	public String firstPage() {
+		return "index";
+	}
 
-        System.out.println(per_page);
-        int total_page = posts.getTotalPages();
-        List<Integer> pages = new ArrayList<>();
+	@GetMapping("/home")
+	@ResponseBody
+	public Page<Post> home(@RequestParam(required = false, defaultValue = "createAt", name = "sort_by") String sort_by,
+			@RequestParam(required = false, defaultValue = "1", name = "page") String page,
+			@RequestParam(required = false, defaultValue = "2", name = "per_page") String per_page) {
+		Page<Post> posts = postService.getByPage(Integer.parseInt(page) - 1, Integer.parseInt(per_page), sort_by);
 
-        if (total_page > 0) {
-            pages = IntStream.rangeClosed(0, total_page-1).boxed().toList();
-        }
-        
-        List<String> links = new ArrayList<>();
-        if (pages != null) {
-            for (int link: pages) {
-                String active = "";
-                if (link == posts.getNumber()) {
-                    active = "active";
-                }
-                String link_patigation = "/home?per_page="+per_page+"&page="+(link+1)+"&sort_by="+sort_by;
-                links.add(String.format("<li class=\"page-item %s\"><a class=\"page-link\" href=\"%s\">%s</a></li>",active,link_patigation,(link+1)));
-            }
-            // model.addAttribute("links", links);
-        }
+		System.out.println(per_page);
+		int total_page = posts.getTotalPages();
+		List<Integer> pages = new ArrayList<>();
 
-        for (Post post: posts) {
-            System.out.println("***"+post.getId() + " "+ post.getTitle() + " " + post.getAuthor().getAuthorities());
-        }
-        return posts;
-    }
+		if (total_page > 0) {
+			pages = IntStream.rangeClosed(0, total_page - 1).boxed().toList();
+		}
 
-    @GetMapping("/about")
-    public String about(Model model) {
-        return "about";
-    }
+		List<String> links = new ArrayList<>();
+		if (pages != null) {
+			for (int link : pages) {
+				String active = "";
+				if (link == posts.getNumber()) {
+					active = "active";
+				}
+				String link_patigation = "/home?per_page=" + per_page + "&page=" + (link + 1) + "&sort_by=" + sort_by;
+				links.add(String.format("<li class=\"page-item %s\"><a class=\"page-link\" href=\"%s\">%s</a></li>",
+						active, link_patigation, (link + 1)));
+			}
+			// model.addAttribute("links", links);
+		}
+
+		for (Post post : posts) {
+			System.out.println("***" + post.getId() + " " + post.getTitle() + " " + post.getAuthor().getAuthorities());
+		}
+		return posts;
+	}
+
+	@GetMapping("/about")
+	public String about(Model model) {
+		return "about";
+	}
 }
-

@@ -13,6 +13,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "POST_CATEGORY")
 public class PostCategory {
-    @EmbeddedId
-    private PostCategoryId id;
+	@EmbeddedId
+	private PostCategoryId id;
 }

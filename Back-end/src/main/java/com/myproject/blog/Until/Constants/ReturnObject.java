@@ -12,7 +12,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class ReturnObject {
-    
-    private String type;
-    private String message;
+
+	private String type;
+	private String message;
 }

@@ -10,31 +10,32 @@ import com.myproject.blog.Until.Email.EmailData;
 
 @Service
 public class EmailService {
-    
-    @Autowired
-    private JavaMailSender javaMailSender;
 
-    @Value("${spring.mail.username}")
-    private String username;
+	@Autowired
+	private JavaMailSender javaMailSender;
 
-    public boolean sendSimpleEmail(EmailData emailData) {
-        try {
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
+	@Value("${spring.mail.username}")
+	private String username;
 
-            mailMessage.setFrom(username);
-            mailMessage.setTo(emailData.getReciptient());
-            mailMessage.setSubject(emailData.getSubject());
-            mailMessage.setText(emailData.getMessageBody());
-            System.out.println("Sended email from "+username+" to "+ emailData.getReciptient() + "| Content is "+ emailData.getMessageBody());
+	public boolean sendSimpleEmail(EmailData emailData) {
+		try {
+			SimpleMailMessage mailMessage = new SimpleMailMessage();
 
-            javaMailSender.send(mailMessage);
+			mailMessage.setFrom(username);
+			mailMessage.setTo(emailData.getReciptient());
+			mailMessage.setSubject(emailData.getSubject());
+			mailMessage.setText(emailData.getMessageBody());
+			System.out.println("Sended email from " + username + " to " + emailData.getReciptient() + "| Content is "
+					+ emailData.getMessageBody());
 
-            Thread.sleep(1000);
-            return true;
-        } catch (Exception e) {
-            // TODO: handle exception
-            e.printStackTrace();
-            return false;
-        }
-    }
+			javaMailSender.send(mailMessage);
+
+			Thread.sleep(1000);
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			return false;
+		}
+	}
 }

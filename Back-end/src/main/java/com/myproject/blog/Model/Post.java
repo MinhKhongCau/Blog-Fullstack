@@ -19,16 +19,16 @@ import lombok.Setter;
 @Entity
 @Table(name = "POST")
 public class Post {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private String title;
-    private String body;
-    private LocalDateTime createAt;
-    private LocalDateTime updateAt;
-    private Boolean approved;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
+	private String title;
+	private String body;
+	private LocalDateTime createAt;
+	private LocalDateTime updateAt;
+	private Boolean approved;
 
-    @ManyToOne
-    @JoinColumn(name = "AUTHOR_ID")
-    private Account author;
+	@ManyToOne
+	@JoinColumn(name = "AUTHOR_ID")
+	private Account author;
 }
