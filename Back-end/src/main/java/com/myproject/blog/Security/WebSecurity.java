@@ -48,7 +48,7 @@ public class WebSecurity {
 		// Add Filter for security
 		http
 				.addFilterBefore(customFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
-				.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+				.addFilterAfter(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 

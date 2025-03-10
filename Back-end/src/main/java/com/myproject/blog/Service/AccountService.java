@@ -1,10 +1,12 @@
 package com.myproject.blog.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -22,17 +24,36 @@ import com.myproject.blog.Repository.AccountRepsitory;
 public class AccountService implements UserDetailsService {
 
 	@Autowired
-	private AccountRepsitory accountRepsitory;
+	private AccountRepsitory accountRepository;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	public Optional<Account> getById(Integer id) {
-		return accountRepsitory.findById(id);
+		return accountRepository.findById(id);
 	}
 
 	public List<Account> getAll() {
-		return accountRepsitory.findAll();
+		return accountRepository.findAll();
+	}
+
+	public String updateAccount(Account account) {
+		accountRepository.updateAccount(
+				account.getId(),
+				account.getAge(),
+				account.getBirthDate(),
+				account.getEmail(),
+				account.getFirstName(),
+				account.getGender(),
+				account.getLastName(),
+				account.getPassword(),
+				account.getPhoto(),
+				account.getResetPasswordExpiry(),
+				account.getResetPasswordToken(),
+				account.getRole(),
+				account.getToken()
+		);
+		return "Account updated successfully.";
 	}
 
 	public Account save(Account account) {
@@ -42,15 +63,15 @@ public class AccountService implements UserDetailsService {
 		}
 		System.out.println("*** Saved account: " + account.toString());
 
-		return accountRepsitory.save(account);
+		return accountRepository.save(account);
 	}
 
 	public void delete(Account account) {
-		accountRepsitory.delete(account);
+		accountRepository.delete(account);
 	}
 
 	public Optional<Account> getByEmail(String email) {
-		return accountRepsitory.findOneByEmailIgnoreCase(email);
+		return accountRepository.findOneByEmailIgnoreCase(email);
 	}
 
 	@Override
@@ -78,7 +99,7 @@ public class AccountService implements UserDetailsService {
 	}
 
 	public Optional<Account> getByToken(String token) {
-		return accountRepsitory.findByToken(token);
+		return accountRepository.findByToken(token);
 	}
 
 }

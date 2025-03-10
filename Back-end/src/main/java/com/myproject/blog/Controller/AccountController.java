@@ -19,12 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -112,7 +107,7 @@ public class AccountController {
 		return Json.toJson(ReturnStatus.ERROR);
 	}
 
-	@PostMapping("/profile")
+	@PutMapping("/profile")
 	@ResponseBody
 	public String profileHandler(@RequestBody Account account, BindingResult result, Principal principal) {
 		if (result.hasErrors()) {
@@ -125,21 +120,26 @@ public class AccountController {
 		if (account.getEmail().compareToIgnoreCase(email) < 0) {
 			return ReturnStatus.ERROR.toString();
 		}
-		Optional<Account> optionalAccount = accountService.getById(account.getId());
-		if (optionalAccount.isPresent()) {
-			Account editAccount = optionalAccount.get();
-			editAccount.setEmail(account.getEmail());
-			editAccount.setPassword(account.getPassword());
-			editAccount.setFirstName(account.getFirstName());
-			editAccount.setLastName(account.getLastName());
-			editAccount.setAge(account.getAge());
-			editAccount.setBirthDate(account.getBirthDate());
-			editAccount.setGender(account.getGender());
-			accountService.save(editAccount);
+		try {
+			Optional<Account> optionalAccount = accountService.getById(account.getId());
+			if (optionalAccount.isPresent()) {
+				Account editAccount = optionalAccount.get();
+				editAccount.setEmail(account.getEmail());
+				editAccount.setPassword(account.getPassword());
+				editAccount.setFirstName(account.getFirstName());
+				editAccount.setLastName(account.getLastName());
+				editAccount.setAge(account.getAge());
+				editAccount.setBirthDate(account.getBirthDate());
+				editAccount.setGender(account.getGender());
+				accountService.save(editAccount);
+			}
+			System.out.println("***Update account:");
+			accountService.updateAccount(account);
+			return Json.toJson(ReturnStatus.SUCCESS.chargeMessage("Account updated successfully"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Json.toJson(ReturnStatus.ERROR.chargeMessage("Update Account not available..."));
 		}
-		System.out.println("***Update account:");
-		accountService.save(account);
-		return Json.toJson(ReturnStatus.SUCCESS.getObject());
 	}
 
 	@PostMapping("/profile/photo")
@@ -178,14 +178,14 @@ public class AccountController {
 
 				System.out.println("*** Path was prepare: " + fileLocation);
 
-				return ReturnStatus.SUCCESS.chargeMessage("You successfully upload!!!").toString();
+				return Json.toJson(ReturnStatus.SUCCESS.chargeMessage("You successfully upload!!!"));
 
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
+				return Json.toJson(ReturnStatus.ERROR.chargeMessage("Cannot load user. Try again!"));
 			}
 		}
-		return Json.toJson(ReturnStatus.SENT.chargeMessage("Cannot load user. Try again!"));
 	}
 
 	@GetMapping("/forgot-password")

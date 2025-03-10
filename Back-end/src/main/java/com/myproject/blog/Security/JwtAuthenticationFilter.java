@@ -26,6 +26,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         System.out.println("***Loading jwt authentication filter...");
 
+        String[] WHILELIST = {
+                "/",
+                "/home",
+                "/register",
+                "/db-console/**",
+                "/login/**",
+                "/forgot-password/**",
+                "/change-password/**",
+                "/about/**",
+                "/resources/**",
+                "/demo/**" };
         // ✅ Bỏ qua JwtAuthenticationFilter nếu request là /api/login
         if (request.getRequestURI().startsWith("/login")) {
             filterChain.doFilter(request, response);
@@ -49,7 +60,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-//            Log.error("failed on set user authentication", ex);
         }
 
         filterChain.doFilter(request, response);

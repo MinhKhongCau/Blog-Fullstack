@@ -55,7 +55,6 @@ public class PostController {
 	}
 
 	@GetMapping("/post/add")
-	@PreAuthorize("isAuthenticated()")
 	public String addPostHandler(Model model, Principal principal) {
 		String authUser = "email";
 
