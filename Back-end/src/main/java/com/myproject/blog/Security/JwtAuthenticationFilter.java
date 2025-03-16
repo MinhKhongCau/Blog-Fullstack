@@ -20,25 +20,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private AccountService accountService;
+
+    private static String[] WHILELIST = {
+            "/",
+            "/home",
+            "/register",
+            "/db-console/**",
+            "/login/**",
+            "/forgot-password/**",
+            "/change-password/**",
+            "/about/**",
+            "/resources/**",
+            "/demo/**" };
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         System.out.println("***Loading jwt authentication filter...");
 
-        String[] WHILELIST = {
-                "/",
-                "/home",
-                "/register",
-                "/db-console/**",
-                "/login/**",
-                "/forgot-password/**",
-                "/change-password/**",
-                "/about/**",
-                "/resources/**",
-                "/demo/**" };
-        // ✅ Bỏ qua JwtAuthenticationFilter nếu request là /api/login
-        if (request.getRequestURI().startsWith("/login")) {
+        String requestURI = request.getRequestURI();
+        // ✅ Nếu request thuộc danh sách WHILELIST, bỏ qua JWT Filter
+        if (isWhitelisted(requestURI)) {
+            System.out.println("Skipping JWT filter for: " + requestURI);
             filterChain.doFilter(request, response);
             return;
         }
@@ -53,13 +57,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String userName = tokenProvider.getUsernameFromToken(jwt);
                 // Lấy thông tin người dùng từ username
                 UserDetails userDetails = accountService.loadUserByUsername(userName);
-            } else { // ❌ Token không hợp lệ
+            } else {
                 System.out.println("Invalid JWT token.");
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token.");
-                return; // 🔥 Chặn request tiếp tục
+                return;
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+            System.out.println("❌ JWT Processing Error: " + ex.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error processing JWT.");
+            return;
         }
 
         filterChain.doFilter(request, response);
@@ -72,6 +79,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return bearerToken.substring(7);
         }
         return null;
+    }
+
+    // Hàm kiểm tra request có nằm trong danh sách whitelist không
+    private boolean isWhitelisted(String requestURI) {
+        for (String path : WHILELIST) {
+            if (path.startsWith(requestURI)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

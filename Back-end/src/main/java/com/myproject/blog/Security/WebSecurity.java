@@ -47,7 +47,7 @@ public class WebSecurity {
 				.csrf(scrt -> scrt.disable());
 		// Add Filter for security
 		http
-				.addFilterBefore(customFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
+				.addFilterAfter(customFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
 				.addFilterAfter(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}

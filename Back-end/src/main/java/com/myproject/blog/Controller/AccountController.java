@@ -195,12 +195,12 @@ public class AccountController {
 	}
 
 	@PostMapping("/forgot-password")
-	public ReturnStatus resetPasswordHandler(Model model, @RequestParam("email") String email,
-			RedirectAttributes attributes) {
+	public String resetPasswordHandler(Model model, @RequestParam("email") String email) {
 		// TODO: process POST request
 		System.out.println("Controller for password is processing...");
 		Optional<Account> accountOptional = accountService.getByEmail(email);
 		if (accountOptional.isPresent()) {
+			System.out.println("Account found: " + accountOptional.get().getFirstName());
 			String resetToken = UUID.randomUUID().toString();
 			LocalDateTime expiry = LocalDateTime.now().plusMinutes(tokenTimeOut);
 			Account account = accountService.getById(accountOptional.get().getId()).get();
@@ -214,19 +214,14 @@ public class AccountController {
 							+ "If you did not request this, you can safely ignore this email.%n"
 							+ "To unsubscribe, please click here: %s unsubscribe", siteDomain, resetToken, siteDomain);
 			EmailData emailData = new EmailData(email, resetPasswordMessage, "Email link to reset password");
-			if (emailService.sendSimpleEmail(emailData) == false) {
-				ReturnStatus returnStatus = ReturnStatus.ERROR;
-				returnStatus.chargeMessage("Cannot send email!!!");
-				return returnStatus;
+			if (!emailService.sendSimpleEmail(emailData)) {
+				return Json.toJson(ReturnStatus.ERROR.chargeMessage("Cannot send email!!!"));
 			}
 
-			ReturnStatus returnStatus = ReturnStatus.SENT;
-			returnStatus.chargeMessage("Email was be sent!");
-			return returnStatus;
+			return Json.toJson(ReturnStatus.SUCCESS.chargeMessage("Email link was sent!"));
 		} else {
-			ReturnStatus returnStatus = ReturnStatus.ERROR;
-			returnStatus.chargeMessage("Email not available");
-			return returnStatus;
+			System.out.println("Account not found: " + email);
+			return Json.toJson(ReturnStatus.ERROR.chargeMessage("Email not available!!!"));
 		}
 	}
 
