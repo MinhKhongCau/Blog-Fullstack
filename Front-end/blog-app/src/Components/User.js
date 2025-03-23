@@ -4,7 +4,7 @@ function PostList() {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
 
-  const baseUrl = "http://localhost:8000/demo"
+  const baseUrl = "http://localhost:8080/demo"
   useEffect(() => {
     fetch(baseUrl, {
       method: "GET",
